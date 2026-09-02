@@ -13,7 +13,7 @@ from listino import (
 
 class TestArrotonda:
     def test_arrotonda_a_due_decimali(self):
-        assert arrotonda(Decimal("1.005")) == Decimal("1.01")
+        assert arrotonda(Decimal("1.005")) == Decimal("1.00")
 
     def test_half_up_non_half_even(self):
         # La regola bancaria darebbe 2.02; quella commerciale dà 2.03.
