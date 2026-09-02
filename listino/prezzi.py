@@ -10,6 +10,7 @@ ALIQUOTE_IVA = {
     "ordinaria": Decimal("0.22"),
     "ridotta": Decimal("0.10"),
     "minima": Decimal("0.04"),
+    "esente": Decimal("0"),
 }
 
 CENTESIMO = Decimal("0.01")
@@ -32,12 +33,22 @@ def applica_sconto(imponibile: Decimal, sconto_percentuale: Decimal) -> Decimal:
     return arrotonda(imponibile * (Decimal(100) - sconto) / Decimal(100))
 
 
-def aggiungi_iva(imponibile: Decimal, aliquota: str = "ordinaria") -> Decimal:
-    """Somma l'IVA a un imponibile, data un'aliquota nota."""
+def aggiungi_iva(
+    imponibile: Decimal,
+    aliquota: str = "ordinaria",
+    causale_esenzione: str | None = None,
+) -> Decimal:
+    """Somma l'IVA a un imponibile, data un'aliquota nota.
+
+    L'aliquota "esente" richiede una causale (es. il riferimento normativo),
+    perché in fattura va stampata: uno 0 nell'aliquota da solo non basta.
+    """
     if aliquota not in ALIQUOTE_IVA:
         raise ValueError(
             f"aliquota sconosciuta: {aliquota!r}; ammesse {sorted(ALIQUOTE_IVA)}"
         )
+    if aliquota == "esente" and not causale_esenzione:
+        raise ValueError("operazione esente senza causale: la causale è obbligatoria")
     imponibile = Decimal(imponibile)
     return arrotonda(imponibile * (Decimal(1) + ALIQUOTE_IVA[aliquota]))
 
@@ -47,13 +58,14 @@ def totale_riga(
     quantita: int,
     sconto_percentuale: Decimal = Decimal(0),
     aliquota: str = "ordinaria",
+    causale_esenzione: str | None = None,
 ) -> Decimal:
     """Totale IVA inclusa di una riga di documento."""
     if quantita < 0:
         raise ValueError(f"quantità negativa: {quantita}")
     imponibile = Decimal(prezzo_unitario) * Decimal(quantita)
     scontato = applica_sconto(imponibile, sconto_percentuale)
-    return aggiungi_iva(scontato, aliquota)
+    return aggiungi_iva(scontato, aliquota, causale_esenzione)
 
 
 def totale_documento(righe: list[dict]) -> Decimal:
