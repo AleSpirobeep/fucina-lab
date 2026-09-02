@@ -9,7 +9,7 @@ test_command: "pytest -q"
 agente:
   modello: "claude-sonnet-5"
   max_turns: 60
-  max_budget_usd: 0.05
+  max_budget_usd: 3.00
   max_iterazioni: 3
 
 # Strumenti che l'agente può usare oltre a quelli di sola lettura.
