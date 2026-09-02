@@ -17,7 +17,14 @@ CENTESIMO = Decimal("0.01")
 
 
 def arrotonda(importo: Decimal) -> Decimal:
-    """Arrotonda a due decimali con la regola commerciale (half up)."""
+    """Arrotonda a due decimali con la regola commerciale (half up).
+
+    A differenza dell'arrotondamento bancario (half even), la cifra 5 va
+    sempre verso l'alto, indipendentemente dalla cifra precedente:
+
+        >>> arrotonda(Decimal("2.025"))
+        Decimal('2.03')
+    """
     return Decimal(importo).quantize(CENTESIMO, rounding=ROUND_HALF_UP)
 
 
