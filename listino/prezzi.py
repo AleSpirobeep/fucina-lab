@@ -32,6 +32,18 @@ def applica_sconto(imponibile: Decimal, sconto_percentuale: Decimal) -> Decimal:
     return arrotonda(imponibile * (Decimal(100) - sconto) / Decimal(100))
 
 
+def applica_sconto_valore(imponibile: Decimal, sconto_valore: Decimal) -> Decimal:
+    """Applica uno sconto a valore fisso a un imponibile.
+
+    Lo sconto è espresso nella stessa valuta dell'imponibile: 5.00 significa 5,00 EUR.
+    """
+    imponibile = Decimal(imponibile)
+    sconto = Decimal(sconto_valore)
+    if sconto < 0 or sconto > imponibile:
+        raise ValueError(f"sconto superiore all'imponibile: {sconto} > {imponibile}")
+    return arrotonda(imponibile - sconto)
+
+
 def aggiungi_iva(imponibile: Decimal, aliquota: str = "ordinaria") -> Decimal:
     """Somma l'IVA a un imponibile, data un'aliquota nota."""
     if aliquota not in ALIQUOTE_IVA:
